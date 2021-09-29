@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<?import javafx.geometry.Insets?>
+<?import java.net.URL?>
+<StackPane xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
+    <stylesheets>
+        <URL value="@DarkTheme.css" />
+    </stylesheets>
+    <VBox fx:id="viewList" styleClass="pane-with-border" minWidth="340" prefWidth="340" VBox.vgrow="ALWAYS">
+        <padding>
+            <Insets top="10" right="10" bottom="10" left="10" />
+        </padding>
+        <StackPane fx:id="viewListPlaceholder" VBox.vgrow="ALWAYS"/>
+    </VBox>
+</StackPane >
