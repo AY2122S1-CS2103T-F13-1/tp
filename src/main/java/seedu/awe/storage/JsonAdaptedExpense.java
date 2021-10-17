@@ -20,7 +20,7 @@ public class JsonAdaptedExpense {
     private final JsonAdaptedPerson payer;
     private final String cost;
     private final String description;
-    private final List<JsonAdaptedPerson> excluded = new ArrayList<>();
+    private final List<JsonAdaptedPerson> included = new ArrayList<>();
 
     /**
      * Constructs a {@code JsonAdaptedExpense} with the given group details.
@@ -29,11 +29,11 @@ public class JsonAdaptedExpense {
     public JsonAdaptedExpense(@JsonProperty("payer") JsonAdaptedPerson payer,
                               @JsonProperty("cost") String cost,
                               @JsonProperty("description") String description,
-                              @JsonProperty("excluded") List<JsonAdaptedPerson> excluded) {
+                              @JsonProperty("included") List<JsonAdaptedPerson> included) {
         this.payer = payer;
         this.cost = cost;
         this.description = description;
-        this.excluded.addAll(excluded);
+        this.included.addAll(included);
     }
 
     /**
@@ -43,7 +43,7 @@ public class JsonAdaptedExpense {
         payer = new JsonAdaptedPerson(source.getPayer());
         cost = source.getCost().toString();
         description = source.getDescription().toString();
-        excluded.addAll(source.getExcluded()
+        included.addAll(source.getIncluded()
                 .stream()
                 .map(JsonAdaptedPerson::new)
                 .collect(Collectors.toList()));
@@ -73,12 +73,12 @@ public class JsonAdaptedExpense {
             throw new IllegalValueException(Address.MESSAGE_CONSTRAINTS);
         }
 
-        final ArrayList<Person> modelExcluded = new ArrayList<>();
-        for (JsonAdaptedPerson excludedPerson : excluded) {
-            modelExcluded.add(excludedPerson.toModelType());
+        final ArrayList<Person> modelIncluded = new ArrayList<>();
+        for (JsonAdaptedPerson includedPerson : included) {
+            modelIncluded.add(includedPerson.toModelType());
         }
         final Description modelDescription = new Description(description);
 
-        return new Expense(modelPayer, modelCost, modelDescription, modelExcluded);
+        return new Expense(modelPayer, modelCost, modelDescription, modelIncluded);
     }
 }

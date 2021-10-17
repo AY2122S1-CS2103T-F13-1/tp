@@ -4,10 +4,12 @@ import static seedu.awe.commons.util.CollectionUtil.requireAllNonNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
+import seedu.awe.model.expense.Cost;
 import seedu.awe.model.expense.Expense;
 import seedu.awe.model.person.Person;
 import seedu.awe.model.tag.Tag;
@@ -19,6 +21,8 @@ public class Group {
     private final ArrayList<Person> members = new ArrayList<>();
     private final Set<Tag> tags = new HashSet<>();
     private final ArrayList<Expense> expenses = new ArrayList<>();
+    private final HashMap<Person, Cost> paidByPayers = new HashMap<>();
+    private final HashMap<Person, Cost> paidByPayees = new HashMap<>();
 
     /**
      * Creates new Group object.
@@ -49,7 +53,7 @@ public class Group {
     }
 
     /**
-     * Creates new Group object with tags.
+     * Creates new Group object with tags and expenses.
      *
      * @param groupName String object representing name of the group.
      * @param members ArrayList of Person objects representing list of members.
@@ -64,7 +68,36 @@ public class Group {
         this.tags.addAll(tags);
         for (Expense expense : expenses) {
             this.expenses.add(expense);
+            paidByPayers.put(expense.getPayer(), expense.getCost());
         }
+    }
+
+    /**
+     * Creates new Group object with tags, expenses and paidByPayees hashmap.
+     *
+     * @param groupName String object representing name of the group.
+     * @param members ArrayList of Person objects representing list of members.
+     * @param tags Set of Tag objects to describe group.
+     * @param expenses List of expenses in the group.
+     */
+    public Group(GroupName groupName, ArrayList<Person> members, Set<Tag> tags,
+                 ArrayList<Expense> expenses, HashMap<Person, Cost> paidByPayees) {
+        this.groupName = groupName;
+        for (Person member : members) {
+            this.addMember(member);
+        }
+        this.tags.addAll(tags);
+        for (Expense expense : expenses) {
+            Person payer = expense.getPayer();
+            Cost cost = expense.getCost();
+            this.expenses.add(expense);
+            if (!paidByPayers.containsKey(payer)) {
+                paidByPayers.put(payer, cost);
+            } else {
+                paidByPayers.computeIfPresent(payer, (key, val) -> val.add(cost));
+            }
+        }
+        this.paidByPayees.putAll(paidByPayees);
     }
 
     /**
@@ -157,6 +190,18 @@ public class Group {
         ArrayList<Expense> newExpenses = new ArrayList<>(expenses);
         newExpenses.add(expense);
         return new Group(groupName, members, tags, newExpenses);
+    }
+
+    /**
+     * Adds an expense into the group.
+     *
+     * @param expense to be added to the group.
+     * @return A new group with the expense added to it.
+     */
+    public Group addExpenseWithIndivPayments(Expense expense, HashMap<Person, Cost> paidByPayees) {
+        ArrayList<Expense> newExpenses = new ArrayList<>(expenses);
+        newExpenses.add(expense);
+        return new Group(groupName, members, tags, newExpenses, paidByPayees);
     }
 
     /**

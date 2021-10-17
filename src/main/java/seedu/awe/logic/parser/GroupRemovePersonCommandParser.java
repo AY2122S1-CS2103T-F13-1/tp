@@ -36,7 +36,7 @@ public class GroupRemovePersonCommandParser implements Parser<GroupRemovePersonC
     /**
      * Returns GroupRemovePersonCommand based on user input.
      *
-     * @param args User input into addressbook.
+     * @param args User input into contact list.
      * @return GroupRemovePersonCommand object to represent command to be executed.
      * @throws ParseException If user input is incorrectly formatted.
      */
@@ -83,10 +83,10 @@ public class GroupRemovePersonCommandParser implements Parser<GroupRemovePersonC
     }
 
     /**
-     * Returns boolean object representing if member has been added into this.membersToBeRemoved.
+     * Returns boolean object representing if member has been added into membersToBeRemoved.
      *
      * @param memberName Name object representing member whose presence is being checked for.
-     * @return boolean object representing if member has been added into this.membersToBeRemoved.
+     * @return boolean object representing if member has been added into membersToBeRemoved.
      * @throws ParseException if the person does not exist in the contact list.
      */
     public boolean addMemberToRemoveList(Name memberName) throws ParseException {

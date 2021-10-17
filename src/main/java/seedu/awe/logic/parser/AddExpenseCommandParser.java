@@ -79,9 +79,9 @@ public class AddExpenseCommandParser implements Parser<AddExpenseCommand> {
         ArrayList<Person> namesAsPersons = namesToPerson(names);
         List<Person> toExclude = findExcluded(excludedNames);
 
-        Expense expense = new Expense(payer, totalCost, description, toExclude);
+        Expense expense = new Expense(payer, totalCost, description);
 
-        return new AddExpenseCommand(expense, groupName, namesAsPersons, costs);
+        return new AddExpenseCommand(expense, groupName, namesAsPersons, costs, toExclude);
     }
 
     private List<Person> findExcluded(List<Name> toExclude) {

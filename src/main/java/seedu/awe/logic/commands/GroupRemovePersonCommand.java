@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 import static seedu.awe.commons.util.CollectionUtil.requireAllNonNull;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import seedu.awe.logic.commands.exceptions.CommandException;
 import seedu.awe.model.Model;
@@ -17,6 +18,7 @@ public class GroupRemovePersonCommand extends Command {
     public static final String MESSAGE_ERROR = "Person(s) not removed from group."
                                                 + "Be sure to use the exact names of group members";
     public static final String MESSAGE_USAGE = "groupremoveperson gn/[GROUPNAME] n/[NAME1] n/[OPTIONAL NAME2]";
+    public static final String MESSAGE_NONEXISTENT_GROUP = "Group %1$s does not exist.";
 
     private final GroupName groupName;
     private final ArrayList<Person> membersToBeRemoved;
@@ -32,44 +34,14 @@ public class GroupRemovePersonCommand extends Command {
         this.isValidCommand = isValidCommand;
     }
 
-    @Override
-    public CommandResult execute(Model model) throws CommandException {
-        requireNonNull(model);
-        if (!isValidCommand) {
-            throw new CommandException(MESSAGE_ERROR);
-        }
-
-        Group oldGroup = model.getGroupByName(groupName);
-        ArrayList<Person> membersFromOldGroup = oldGroup.getMembers();
-        ArrayList<Person> remainingMembers = removeMembers(membersFromOldGroup, membersToBeRemoved);
-        Group newGroup = new Group(groupName, remainingMembers, oldGroup.getTags());
-        model.deleteGroup(oldGroup);
-        model.addGroup(newGroup);
-        return new CommandResult(MESSAGE_SUCCESS);
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        if (!(other instanceof GroupAddPersonCommand)) {
-            return false;
-        }
-        GroupAddPersonCommand otherCommand = (GroupAddPersonCommand) other;
-        if (this.isValidCommand == (otherCommand.getValidCommand())
-                && checkSameMembers(otherCommand.getNewMembers())
-                && this.groupName.equals(otherCommand.getGroupName())) {
-            return true;
-        }
-        return false;
-    }
-
     /**
-     * Returns int object tracking the number of non-matching members between this.newMembers and otherMembers.
+     * Returns int object tracking the number of non-matching members between membersToBeRemoved and otherMembers.
      *
      * @param numberOfNonMatchingMembers int value to track the number of members in otherMembers
-     *                                   that are not present in this.members.
+     *                                   that are not present in membersToBeRemoved.
      * @param member Person object that is being searched for in otherMembers.
      * @param otherMembers List of Person objects from another instance of CreateGroupCommand.
-     * @return int object to track the number of members in otherMembers that are not present in this.newMembers.
+     * @return int object to track the number of members in otherMembers that are not present in membersToBeRemoved.
      */
     public int checkForMember(int numberOfNonMatchingMembers, Person member, ArrayList<Person> otherMembers) {
         for (Person otherMember : otherMembers) {
@@ -82,10 +54,10 @@ public class GroupRemovePersonCommand extends Command {
     }
 
     /**
-     * Returns a boolean object representing if this.newMembers contains the same Person objects as otherMembers.
+     * Returns a boolean object representing if membersToBeRemoved contains the same Person objects as otherMembers.
      *
-     * @param otherMembers List of Person objects from another instance of CreateGroupCommand.
-     * @return boolean object representing if this.newMembers contains the same Person objects as otherMembers.
+     * @param otherMembers List of Person objects from another instance of GroupRemovePersonCommand.
+     * @return boolean object representing if membersToBeRemoved contains the same Person objects as otherMembers.
      */
     public boolean checkSameMembers(ArrayList<Person> otherMembers) {
         int numberOfNonMatchingMembers = otherMembers.size();
@@ -113,5 +85,38 @@ public class GroupRemovePersonCommand extends Command {
             }
         }
         return remainingMembers;
+    }
+
+    @Override
+    public CommandResult execute(Model model) throws CommandException {
+        requireNonNull(model);
+        if (!isValidCommand) {
+            throw new CommandException(MESSAGE_ERROR);
+        }
+
+        Group oldGroup = model.getGroupByName(groupName);
+        if (Objects.isNull(oldGroup)) {
+            throw new CommandException(String.format(MESSAGE_NONEXISTENT_GROUP, groupName));
+        }
+        ArrayList<Person> membersFromOldGroup = oldGroup.getMembers();
+        ArrayList<Person> remainingMembers = removeMembers(membersFromOldGroup, membersToBeRemoved);
+        Group newGroup = new Group(groupName, remainingMembers, oldGroup.getTags());
+        model.deleteGroup(oldGroup);
+        model.addGroup(newGroup);
+        return new CommandResult(MESSAGE_SUCCESS);
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (!(other instanceof GroupAddPersonCommand)) {
+            return false;
+        }
+        GroupAddPersonCommand otherCommand = (GroupAddPersonCommand) other;
+        if (this.isValidCommand == otherCommand.getValidCommand()
+                && checkSameMembers(otherCommand.getNewMembers())
+                && this.groupName.equals(otherCommand.getGroupName())) {
+            return true;
+        }
+        return false;
     }
 }

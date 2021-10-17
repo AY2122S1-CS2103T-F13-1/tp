@@ -33,7 +33,7 @@ public class ExpenseBuilder {
     private final ArrayList<Person> selfPayees = new ArrayList<>();
     private Cost cost;
     private Description description;
-    private final ArrayList<Person> excluded = new ArrayList<>();
+    private final ArrayList<Person> included = new ArrayList<>();
 
     /**
      * Creates a {@code ExpenseBuilder} with the default details.
@@ -133,9 +133,9 @@ public class ExpenseBuilder {
     /**
      * Sets the {@code List of Person} of the {@code Expense} that we are building.
      */
-    public ExpenseBuilder withExcluded(Person... persons) {
+    public ExpenseBuilder withIncluded(Person... persons) {
         for (Person person : persons) {
-            this.excluded.add(new PersonBuilder(person).build());
+            this.included.add(new PersonBuilder(person).build());
         }
         return this;
     }
@@ -150,6 +150,6 @@ public class ExpenseBuilder {
         for (Person p : selfPayees) {
 
         }
-        return new Expense(person, cost, description, excluded);
+        return new Expense(person, cost, description, included);
     }
 }

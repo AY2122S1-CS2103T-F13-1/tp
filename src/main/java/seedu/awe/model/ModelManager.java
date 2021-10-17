@@ -218,6 +218,7 @@ public class ModelManager implements Model {
     @Override
     public void addExpense(Expense expense, Group group) {
         addressBook.addExpense(expense, group);
+        updateFilteredExpenseList(PREDICATE_SHOW_ALL_EXPENSES);
     }
 
     /**
@@ -253,6 +254,7 @@ public class ModelManager implements Model {
     @Override
     public void setExpenses(Group group) {
         addressBook.setExpenses(group);
+        updateFilteredExpenseList(PREDICATE_SHOW_ALL_EXPENSES);
     }
 
     @Override

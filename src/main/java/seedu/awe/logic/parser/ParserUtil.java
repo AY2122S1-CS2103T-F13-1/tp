@@ -119,6 +119,18 @@ public class ParserUtil {
     }
 
     /**
+     * Parses {@code Collection<String> groupNames} into a {@code List<GroupName>}.
+     */
+    public static List<GroupName> parseGroupNames(Collection<String> groupNames) throws ParseException {
+        requireNonNull(groupNames);
+        final List<GroupName> groupNamesList = new ArrayList<>();
+        for (String groupName : groupNames) {
+            groupNamesList.add(parseGroupName(groupName));
+        }
+        return groupNamesList;
+    }
+
+    /**
      * Parses a {@code String tag} into a {@code Tag}.
      * Leading and trailing whitespaces will be trimmed.
      *

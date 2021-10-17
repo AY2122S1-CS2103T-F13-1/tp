@@ -35,7 +35,7 @@ public class AddExpenseCommandTest {
     @Test
     public void constructor_nullExpense_throwsNullPointerException() {
         assertThrows(NullPointerException.class, () -> new AddExpenseCommand(null,
-                null, null, null));
+                null, null, null, null));
     }
 
     @Test
@@ -49,7 +49,7 @@ public class AddExpenseCommandTest {
         GroupName groupName = validGroup.getGroupName();
 
         CommandResult commandResult = new AddExpenseCommand(validExpense, groupName,
-                new ArrayList<>(), new ArrayList<>()).execute(modelStub);
+                new ArrayList<>(), new ArrayList<>(), new ArrayList<>()).execute(modelStub);
 
         assertEquals(String.format(AddExpenseCommand.MESSAGE_SUCCESS, validPerson),
                 commandResult.getFeedbackToUser());
@@ -65,7 +65,7 @@ public class AddExpenseCommandTest {
         GroupName groupName = validGroup.getGroupName();
 
         CommandResult commandResult = new AddExpenseCommand(validExpense, groupName,
-                new ArrayList<>(), new ArrayList<>()).execute(modelStub);
+                new ArrayList<>(), new ArrayList<>(), new ArrayList<>()).execute(modelStub);
 
         assertEquals(String.format(AddExpenseCommand.MESSAGE_NOT_PART_OF_GROUP, validPerson),
                 commandResult.getFeedbackToUser());
@@ -76,32 +76,35 @@ public class AddExpenseCommandTest {
         ModelStubAcceptingExpenseAdded modelStub = new ModelStubAcceptingExpenseAdded();
         Person validPerson = new PersonBuilder().build();
         Group validGroup = new GroupBuilder().build();
-        Expense validExpense = new ExpenseBuilder().withExcluded(validPerson).build();
+        Expense validExpense = new ExpenseBuilder().build();
         validGroup.addMember(validPerson);
         modelStub.addGroup(validGroup);
         GroupName groupName = validGroup.getGroupName();
 
         CommandResult commandResult = new AddExpenseCommand(validExpense, groupName,
-                new ArrayList<>(), new ArrayList<>()).execute(modelStub);
+                new ArrayList<>(), new ArrayList<>(), new ArrayList<>(Arrays.asList(validPerson))).execute(modelStub);
 
         assertEquals(String.format(AddExpenseCommand.MESSAGE_ALL_MEMBERS_EXCLUDED, validPerson),
                 commandResult.getFeedbackToUser());
     }
 
     @Test
-    public void execute_excludedPersonNotPartOfGroup_throwsCommandException() throws Exception {
+    public void execute_includedPersonNotPartOfGroup_throwsCommandException() throws Exception {
         ModelStubAcceptingExpenseAdded modelStub = new ModelStubAcceptingExpenseAdded();
+
         Person validPerson = new PersonBuilder().build();
         Person validPersonNotInGroup = new PersonBuilder().withName("nic").build();
+
         Group validGroup = new GroupBuilder().build();
-        Expense validExpense = new ExpenseBuilder()
-                .withExcluded(validPersonNotInGroup).build();
+        Expense validExpense = new ExpenseBuilder().build();
+
         validGroup.addMember(validPerson);
         modelStub.addGroup(validGroup);
         GroupName groupName = validGroup.getGroupName();
 
         CommandResult commandResult = new AddExpenseCommand(validExpense, groupName,
-                new ArrayList<>(), new ArrayList<>()).execute(modelStub);
+                new ArrayList<>(), new ArrayList<>(),
+                new ArrayList<>(Arrays.asList(validPersonNotInGroup))).execute(modelStub);
 
         assertEquals(String.format(AddExpenseCommand.MESSAGE_NOT_PART_OF_GROUP, validPerson),
                 commandResult.getFeedbackToUser());
@@ -118,7 +121,7 @@ public class AddExpenseCommandTest {
         GroupName groupName = validGroup.getGroupName();
 
         CommandResult commandResult = new AddExpenseCommand(validExpense, groupName,
-                new ArrayList<>(), new ArrayList<>()).execute(modelStub);
+                new ArrayList<>(), new ArrayList<>(), new ArrayList<>()).execute(modelStub);
 
         assertEquals(String.format(AddExpenseCommand.MESSAGE_COST_ZERO_OR_LESS, validPerson),
                 commandResult.getFeedbackToUser());
@@ -138,7 +141,7 @@ public class AddExpenseCommandTest {
         Cost costOfSelfPayment = new Cost("30");
 
         AddExpenseCommand addExpenseCommand = new AddExpenseCommand(validExpense, groupName,
-                Arrays.asList(validSelfPayee), Arrays.asList(costOfSelfPayment));
+                Arrays.asList(validSelfPayee), Arrays.asList(costOfSelfPayment), new ArrayList<>());
 
         CommandResult commandResult = addExpenseCommand.execute(modelStub);
 
@@ -162,7 +165,7 @@ public class AddExpenseCommandTest {
         Cost costOfSelfPayment = new Cost("30");
 
         CommandResult commandResult = new AddExpenseCommand(validExpense, groupName,
-                Arrays.asList(validSelfPayee), Arrays.asList(costOfSelfPayment)).execute(modelStub);
+                Arrays.asList(validSelfPayee), Arrays.asList(costOfSelfPayment), new ArrayList<>()).execute(modelStub);
 
         assertEquals(String.format(seedu.awe.logic.commands.AddExpenseCommand.MESSAGE_NOT_PART_OF_GROUP, validPerson),
                 commandResult.getFeedbackToUser());
@@ -174,16 +177,16 @@ public class AddExpenseCommandTest {
         Expense bobPayer = new ExpenseBuilder().withName("Bob").build();
         GroupName groupName = new GroupName("arcade");
         AddExpenseCommand addAlicePayerCommand = new AddExpenseCommand(alicePayer,
-                groupName, new ArrayList<>(), new ArrayList<>());
+                groupName, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
         AddExpenseCommand addBobPayerCommand = new AddExpenseCommand(bobPayer,
-                groupName, new ArrayList<>(), new ArrayList<>());
+                groupName, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
 
         // same object -> returns true
         assertTrue(addAlicePayerCommand.equals(addAlicePayerCommand));
 
         // same values -> returns true
         AddExpenseCommand addAlicePayerCommandCopy = new AddExpenseCommand(alicePayer,
-                groupName, new ArrayList<>(), new ArrayList<>());
+                groupName, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
         assertTrue(addAlicePayerCommandCopy.equals(addAlicePayerCommandCopy));
 
         // different types -> returns false

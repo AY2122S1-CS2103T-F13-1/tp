@@ -86,7 +86,7 @@ public class TypicalGroups {
     }
 
     public static List<Group> getTypicalGroups() {
-        return new ArrayList<>(Arrays.asList(BALI, LONDON, OSLO, HELSINKI, LONDON, AMSTERDAM, INDIA,
+        return new ArrayList<>(Arrays.asList(BALI, LONDON, OSLO, HELSINKI, AMSTERDAM, INDIA,
                 DUBAI, PARIS, DOHA, CHINA));
     }
 

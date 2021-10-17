@@ -3,6 +3,7 @@ import static java.util.Objects.requireNonNull;
 import static seedu.awe.commons.util.CollectionUtil.requireAllNonNull;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import seedu.awe.logic.commands.exceptions.CommandException;
 import seedu.awe.model.Model;
@@ -16,6 +17,7 @@ public class GroupAddPersonCommand extends Command {
     public static final String MESSAGE_ERROR = "Person(s) not added. Be sure to use the exact names of group members";
     public static final String MESSAGE_DUPLICATE_PERSON = "%1$s is already in the group";
     public static final String MESSAGE_USAGE = "groupaddperson gn/[GROUPNAME] n/[NAME1] n/[OPTIONAL NAME2]";
+    public static final String MESSAGE_NONEXISTENT_GROUP = "Group %1$s does not exist.";
 
     private final GroupName groupName;
     private final ArrayList<Person> newMembers;
@@ -49,7 +51,7 @@ public class GroupAddPersonCommand extends Command {
      * @param numberOfNonMatchingMembers int value to track the number of members in otherMembers
      *                                   that are not present in this.members.
      * @param member Person object that is being searched for in otherMembers.
-     * @param otherMembers List of Person objects from another instance of CreateGroupCommand.
+     * @param otherMembers List of Person objects from another instance of GroupAddPersonCommand.
      * @return int object to track the number of members in otherMembers that are not present in this.newMembers.
      */
     public int checkForMember(int numberOfNonMatchingMembers, Person member, ArrayList<Person> otherMembers) {
@@ -65,7 +67,7 @@ public class GroupAddPersonCommand extends Command {
     /**
      * Returns a boolean object representing if this.newMembers contains the same Person objects as otherMembers.
      *
-     * @param otherMembers List of Person objects from another instance of CreateGroupCommand.
+     * @param otherMembers List of Person objects from another instance of GroupAddPersonCommand.
      * @return boolean object representing if this.newMembers contains the same Person objects as otherMembers.
      */
     public boolean checkSameMembers(ArrayList<Person> otherMembers) {
@@ -84,6 +86,9 @@ public class GroupAddPersonCommand extends Command {
         }
 
         Group oldGroup = model.getGroupByName(groupName);
+        if (Objects.isNull(oldGroup)) {
+            throw new CommandException(String.format(MESSAGE_NONEXISTENT_GROUP, groupName));
+        }
         ArrayList<Person> membersFromOldGroup = oldGroup.getMembers();
         for (Person member : newMembers) {
             if (membersFromOldGroup.contains(member)) {
@@ -103,7 +108,7 @@ public class GroupAddPersonCommand extends Command {
             return false;
         }
         GroupAddPersonCommand otherCommand = (GroupAddPersonCommand) other;
-        if (this.isValidCommand == (otherCommand.getValidCommand())
+        if (this.isValidCommand == otherCommand.getValidCommand()
                 && checkSameMembers(otherCommand.getNewMembers())
                 && this.groupName.equals(otherCommand.getGroupName())) {
             return true;

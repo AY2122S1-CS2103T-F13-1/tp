@@ -36,7 +36,7 @@ public class GroupAddPersonCommandParser implements Parser<GroupAddPersonCommand
     /**
      * Returns GroupAddPersonCommand based on user input.
      *
-     * @param args User input into addressbook.
+     * @param args User input into contact list.
      * @return GroupAddPersonCommand object to represent command to be executed.
      * @throws ParseException If user input is incorrectly formatted.
      */

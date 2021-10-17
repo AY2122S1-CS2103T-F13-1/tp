@@ -2,12 +2,17 @@ package seedu.awe.logic.commands;
 
 import static java.util.Objects.requireNonNull;
 import static seedu.awe.logic.parser.CliSyntax.PREFIX_GROUP_NAME;
+import static seedu.awe.model.Model.PREDICATE_SHOW_ALL_EXPENSES;
+
+import java.util.Objects;
 
 import seedu.awe.logic.commands.exceptions.CommandException;
 import seedu.awe.model.Model;
 import seedu.awe.model.group.Group;
 import seedu.awe.model.group.GroupName;
 import seedu.awe.model.group.exceptions.GroupNotFoundException;
+
+
 
 /**
  * Lists all expenses of the group to the user.
@@ -40,7 +45,11 @@ public class ListExpensesCommand extends Command {
         requireNonNull(model);
         try {
             Group group = model.getGroupByName(groupName);
+            if (Objects.isNull(group)) {
+                throw new CommandException(MESSAGE_GROUP_NOT_FOUND);
+            }
             model.setExpenses(group);
+            model.updateFilteredExpenseList(PREDICATE_SHOW_ALL_EXPENSES);
             return new CommandResult(MESSAGE_SUCCESS, false, false, false, false, true);
         } catch (GroupNotFoundException e) {
             throw new CommandException(MESSAGE_GROUP_NOT_FOUND);

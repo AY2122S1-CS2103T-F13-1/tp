@@ -28,6 +28,8 @@ Around the World in $80 (AWE) is a **desktop app for managing contacts, optimize
    
    * **`groups`** : The command `groups` lists all groups.
 
+   * **`expenses`** : The command `expenses` lists all expenses in a particular group.
+     
    * **`addcontact`** : The command `addcontact n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01` adds a contact named `John Doe` to the Address Book.
 
    * **`deletecontact`** : The command `deletecontact 3` removes the 3rd contact shown in the current list.
@@ -193,7 +195,7 @@ Examples:
 
 Find groups whose names contain any of the given keywords.
 
-Format: `findgroupsKEYWORD [MORE_KEYWORDS]`
+Format: `findgroups KEYWORD [MORE_KEYWORDS]`
 
 * The search is case-insensitive. e.g `london` will match `London`
 * The order of the keywords does not matter. e.g. `United States` will match `States United`
@@ -203,17 +205,17 @@ Format: `findgroupsKEYWORD [MORE_KEYWORDS]`
   e.g. `Taiwan Malaysia` will return `Taiwan`, `Malaysia`
 
 Examples:
-* `findcontacts London` returns `London` and `london trip`
-* `findcontacts Taiwan Malaysia` returns `Taiwan` `Malaysia`<br>
+* `findgroups London` returns `London` and `london trip`
+* `findgroups Taiwan Malaysia` returns `Taiwan` `Malaysia`<br>
   ![result for 'findcontacts Taiwan Malaysia'](images/findAlexDavidResult.png)
   
 ### Viewing a shared expense: `expenses`
-Returns a message containing all existing expenses within the active travel group. Expenses are sorted from most recent to least recent.
+Shows a list containing all existing expenses within the specified travel group. Expenses are sorted from most recent to least recent.
 
-Format: `expense INDEX`
+Format: `expenses INDEX`
 
-* GROUP_ID argument is mandatory
-* GROUP_ID must represent the id of an existing travel group
+* INDEX argument is mandatory.
+* INDEX must correspond to a valid index of an existing travel group.
 
 Examples: 
 * `groups` followed by `expense 1` shows all the expenses of the 1st travel group in the group list.
@@ -251,6 +253,23 @@ Format: `deleteexpense gn/GROUP_NAME i/INDEX`
 Examples:
 * `deleteexpense gn/Bali i/1`
 * `deleteexpense gn/London i/2`
+
+### Locating expenses by description: `findexpenses`
+
+Finds expenses within the specified group which descriptions contain any of the given keywords.
+
+Format: `findexpenses KEYWORD [MORE_KEYWORDS] gn/GROUP_NAME`
+
+* The search is case-insensitive. e.g `dinner` will match `Dinner`
+* The order of the keywords does not matter. e.g. `Dinner Transportation` will match `Transportation Dinner`
+* Only the description is searched.
+* Only full words will be matched e.g. `Dinner` will not match `Dinners`
+* Expenses matching at least one keyword will be returned (i.e. `OR` search).
+  e.g. `Dinner Transportation` will return `Friday dinner`, `Transportation tickets`
+
+Examples:
+* `findexpenses dinner gn/London` returns `dinner` and `Friday dinner`
+* `findexpenses lunch souvenirs` returns `lunch`, `souvenirs`<br>
 
 ### Saving the data
 
